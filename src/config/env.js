@@ -32,7 +32,11 @@ export const env = {
   jwtSecret: process.env.JWT_SECRET,
   jwtExpiresIn: process.env.JWT_EXPIRES_IN ?? '15m',
   frontendOrigins: parseFrontendOrigins(),
-  databaseSsl: process.env.DATABASE_SSL === 'true' ? { rejectUnauthorized: process.env.DATABASE_SSL_REJECT_UNAUTHORIZED !== 'false' } : false,
+  // Hosted PostgreSQL providers generally require TLS. Local PostgreSQL
+  // remains non-TLS unless DATABASE_SSL=true is set explicitly.
+  databaseSsl: (process.env.DATABASE_SSL === 'true' || (process.env.NODE_ENV === 'production' && process.env.DATABASE_SSL !== 'false'))
+    ? { rejectUnauthorized: process.env.DATABASE_SSL_REJECT_UNAUTHORIZED !== 'false' }
+    : false,
   demoAdminPassword: process.env.DEMO_ADMIN_PASSWORD,
   demoStudentPassword: process.env.DEMO_STUDENT_PASSWORD,
   demoSeedPassword: process.env.DEMO_SEED_PASSWORD,
