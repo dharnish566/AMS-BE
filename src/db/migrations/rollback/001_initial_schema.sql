@@ -1,0 +1,11 @@
+DROP TABLE IF EXISTS submission_confirmations;
+DROP TABLE IF EXISTS group_submissions;
+DROP TABLE IF EXISTS target_students;
+DROP TABLE IF EXISTS assignment_targets;
+DROP TABLE IF EXISTS assignments;
+DROP TABLE IF EXISTS group_invitations;
+DROP TABLE IF EXISTS group_members;
+DROP TABLE IF EXISTS groups;
+DROP TABLE IF EXISTS users;
+DROP EXTENSION IF EXISTS citext;
+DROP EXTENSION IF EXISTS pgcrypto;
