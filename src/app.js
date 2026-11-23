@@ -23,6 +23,7 @@ export function createApp() {
   app.use(express.json({ limit: '1mb' }));
   app.use(rateLimit({ windowMs: 15 * 60 * 1000, limit: 300, standardHeaders: true, legacyHeaders: false }));
 
+  app.get('/', (_req, res) => res.send('Joineazy API is running'));
   app.get('/api/health', (_req, res) => res.json({ status: 'ok', service: 'joineazy-api' }));
   app.use('/api/auth', authRoutes);
   app.use('/api/integrations/dropbox', dropboxRoutes);
