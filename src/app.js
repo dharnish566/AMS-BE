@@ -9,6 +9,7 @@ import groupRoutes, { invitationRouter } from './modules/groups/routes.js';
 import assignmentRoutes from './modules/assignments/routes.js';
 import submissionRoutes from './modules/submissions/routes.js';
 import analyticsRoutes from './modules/analytics/routes.js';
+import dropboxRoutes from './modules/dropbox/routes.js';
 
 export function createApp() {
   const app = express();
@@ -19,6 +20,9 @@ export function createApp() {
 
   app.get('/api/health', (_req, res) => res.json({ status: 'ok', service: 'joineazy-api' }));
   app.use('/api/auth', authRoutes);
+  app.use('/api/integrations/dropbox', dropboxRoutes);
+  // Also support /integrations/dropbox directly in case Dropbox redirect URI is configured without /api
+  app.use('/integrations/dropbox', dropboxRoutes);
   app.use('/api/groups', groupRoutes);
   app.use('/api/invitations', invitationRouter);
   app.use('/api/assignments', assignmentRoutes);

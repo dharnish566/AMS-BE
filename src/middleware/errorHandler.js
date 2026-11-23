@@ -4,7 +4,7 @@ export function notFoundHandler(req, res) {
 
 export function errorHandler(err, req, res, _next) {
   const status = err.statusCode ?? 500;
-  const message = status >= 500 ? 'An unexpected server error occurred.' : err.message;
+  const message = status >= 500 && err.code !== 'DROPBOX_NOT_CONFIGURED' ? 'An unexpected server error occurred.' : err.message;
   if (status >= 500) console.error(err.message);
   res.status(status).json({ error: { code: err.code ?? 'INTERNAL_ERROR', message } });
 }

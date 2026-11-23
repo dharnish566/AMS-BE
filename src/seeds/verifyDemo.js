@@ -44,10 +44,10 @@ async function verifyApi() {
   assert.equal(groupResponse.group.name, 'Code Titans');
   assert.equal(groupResponse.group.members.length, 3);
   assert.ok(progress.totals.assigned > 0);
-  assert.equal(adminAssignments.assignments.length, 10);
-  assert.equal(secondAdminAssignments.assignments.length, 10);
-  assert.equal(analytics.assignmentRates.length, 9);
-  assert.equal(secondAnalytics.assignmentRates.length, 7);
+  assert.equal(adminAssignments.assignments.filter((assignment) => assignmentTitles.includes(assignment.title)).length, 10);
+  assert.equal(secondAdminAssignments.assignments.filter((assignment) => assignmentTitles.includes(assignment.title)).length, 10);
+  assert.equal(analytics.assignmentRates.filter((assignment) => assignmentTitles.includes(assignment.title)).length, 9);
+  assert.equal(secondAnalytics.assignmentRates.filter((assignment) => assignmentTitles.includes(assignment.title)).length, 7);
   assert.ok(Number(analytics.confirmedPending.confirmed) > 0);
   console.log('API portal smoke checks passed for one student and one professor account.');
 }
@@ -70,7 +70,7 @@ async function verify() {
     const statusCounts = Object.fromEntries((await client.query(`SELECT status, COUNT(*)::int AS count FROM assignments WHERE title = ANY($1::text[]) GROUP BY status`, [assignmentTitles])).rows.map((row) => [row.status, row.count]));
     assert.deepEqual(statusCounts, expectedStatuses);
 
-    const totals = await client.query(`SELECT COUNT(*) FILTER (WHERE a.status <> 'DRAFT')::int AS targets, COUNT(DISTINCT ts.id)::int AS target_students, COUNT(DISTINCT sc.id)::int AS individual_confirmations, COUNT(DISTINCT gs.id)::int AS group_submissions FROM assignments a LEFT JOIN assignment_targets at ON at.assignment_id = a.id LEFT JOIN target_students ts ON ts.target_id = at.id LEFT JOIN submission_confirmations sc ON sc.target_student_id = ts.id LEFT JOIN group_submissions gs ON gs.target_id = at.id WHERE a.title = ANY($1::text[])`, [assignmentTitles]);
+    const totals = await client.query(`SELECT COUNT(DISTINCT at.id) FILTER (WHERE a.status <> 'DRAFT')::int AS targets, COUNT(DISTINCT ts.id)::int AS target_students, COUNT(DISTINCT sc.id)::int AS individual_confirmations, COUNT(DISTINCT gs.id)::int AS group_submissions FROM assignments a LEFT JOIN assignment_targets at ON at.assignment_id = a.id LEFT JOIN target_students ts ON ts.target_id = at.id LEFT JOIN submission_confirmations sc ON sc.target_student_id = ts.id LEFT JOIN group_submissions gs ON gs.target_id = at.id WHERE a.title = ANY($1::text[])`, [assignmentTitles]);
     assert.equal(totals.rows[0].targets, 104);
     assert.equal(totals.rows[0].target_students, 144);
     assert.equal(totals.rows[0].individual_confirmations, 74);

@@ -19,4 +19,9 @@ export const env = {
   demoStudentPassword: process.env.DEMO_STUDENT_PASSWORD,
   demoSeedPassword: process.env.DEMO_SEED_PASSWORD,
   testOnedriveUrl: process.env.TEST_ONEDRIVE_URL,
+  dropboxIntegrationEnabled: process.env.DROPBOX_INTEGRATION_ENABLED === 'true',
+  dropboxAppKey: process.env.DROPBOX_APP_KEY,
+  dropboxAppSecret: process.env.DROPBOX_APP_SECRET,
+  dropboxRedirectUri: process.env.DROPBOX_REDIRECT_URI,
+  dropboxTokenEncryptionKey: process.env.DROPBOX_TOKEN_ENCRYPTION_KEY,
 };
