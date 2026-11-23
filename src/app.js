@@ -14,7 +14,12 @@ import dropboxRoutes from './modules/dropbox/routes.js';
 export function createApp() {
   const app = express();
   app.use(helmet());
-  app.use(cors({ origin: env.frontendOrigins }));
+  app.use(cors({
+    origin: env.frontendOrigins,
+    methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    optionsSuccessStatus: 204,
+  }));
   app.use(express.json({ limit: '1mb' }));
   app.use(rateLimit({ windowMs: 15 * 60 * 1000, limit: 300, standardHeaders: true, legacyHeaders: false }));
 

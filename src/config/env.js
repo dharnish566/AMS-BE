@@ -6,6 +6,24 @@ import { fileURLToPath } from 'node:url';
 // level above the backend package).
 dotenv.config({ path: fileURLToPath(new URL('../../.env', import.meta.url)) });
 
+function parseFrontendOrigins() {
+  // Keep the production fallback aligned with the deployed Vercel SPA. A
+  // comma-separated FRONTEND_ORIGIN still allows custom domains and local
+  // development without weakening CORS to '*'.
+  const configuredOrigins = process.env.FRONTEND_ORIGIN
+    ?? (process.env.NODE_ENV === 'production' ? 'https://joineazy.vercel.app' : 'http://localhost:5173');
+
+  const origins = configuredOrigins
+    .split(',')
+    .map((origin) => origin.trim().replace(/\/$/, ''))
+    .filter(Boolean);
+
+  if (process.env.NODE_ENV === 'production' && !origins.includes('https://joineazy.vercel.app')) {
+    origins.push('https://joineazy.vercel.app');
+  }
+
+  return origins;
+}
 
 export const env = {
   nodeEnv: process.env.NODE_ENV ?? 'development',
@@ -13,7 +31,7 @@ export const env = {
   databaseUrl: process.env.DATABASE_URL,
   jwtSecret: process.env.JWT_SECRET,
   jwtExpiresIn: process.env.JWT_EXPIRES_IN ?? '15m',
-  frontendOrigins: (process.env.FRONTEND_ORIGIN ?? 'http://localhost:5173').split(',').map((origin) => origin.trim()).filter(Boolean),
+  frontendOrigins: parseFrontendOrigins(),
   databaseSsl: process.env.DATABASE_SSL === 'true' ? { rejectUnauthorized: process.env.DATABASE_SSL_REJECT_UNAUTHORIZED !== 'false' } : false,
   demoAdminPassword: process.env.DEMO_ADMIN_PASSWORD,
   demoStudentPassword: process.env.DEMO_STUDENT_PASSWORD,

@@ -16,6 +16,28 @@ test('health endpoint is registered', async () => {
   }
 });
 
+test('login preflight allows the deployed frontend request headers', async () => {
+  const app = createApp();
+  const server = app.listen(0);
+  const { port } = server.address();
+  try {
+    const response = await fetch(`http://127.0.0.1:${port}/api/auth/login`, {
+      method: 'OPTIONS',
+      headers: {
+        Origin: 'http://localhost:5173',
+        'Access-Control-Request-Method': 'POST',
+        'Access-Control-Request-Headers': 'content-type',
+      },
+    });
+    assert.equal(response.status, 204);
+    assert.equal(response.headers.get('access-control-allow-origin'), 'http://localhost:5173');
+    assert.match(response.headers.get('access-control-allow-methods'), /POST/);
+    assert.match(response.headers.get('access-control-allow-headers'), /Content-Type/i);
+  } finally {
+    server.close();
+  }
+});
+
 test('protected auth endpoint rejects missing tokens', async () => {
   const app = createApp();
   const server = app.listen(0);
