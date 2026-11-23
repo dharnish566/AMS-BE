@@ -13,6 +13,9 @@ import dropboxRoutes from './modules/dropbox/routes.js';
 
 export function createApp() {
   const app = express();
+  // Vercel sits in front of the function and forwards X-Forwarded-For.
+  // Trust the first proxy so express-rate-limit can identify clients safely.
+  app.set('trust proxy', 1);
   app.use(helmet());
   app.use(cors({
     origin: env.frontendOrigins,
@@ -39,3 +42,7 @@ export function createApp() {
   app.use(errorHandler);
   return app;
 }
+
+// Also expose a default Express handler for Vercel deployments that detect
+// this module directly as a function entry point.
+export default createApp();
