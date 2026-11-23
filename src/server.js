@@ -7,4 +7,7 @@ app.get('/', (req, res) => {
   res.send('Joineazy API is running');
 });
 
-app.listen(env.port, () => console.log(`Joineazy API listening on port ${env.port}`));
+app.listen(env.port, () => {
+  console.log(`Joineazy API is running at http://localhost:${env.port}`);
+  console.log(`Health check: http://localhost:${env.port}/api/health`);
+});

@@ -33,6 +33,17 @@ test('login preflight allows the deployed frontend request headers', async () =>
     assert.equal(response.headers.get('access-control-allow-origin'), 'http://localhost:5173');
     assert.match(response.headers.get('access-control-allow-methods'), /POST/);
     assert.match(response.headers.get('access-control-allow-headers'), /Content-Type/i);
+
+    const deployedResponse = await fetch(`http://127.0.0.1:${port}/api/auth/login`, {
+      method: 'OPTIONS',
+      headers: {
+        Origin: 'https://collabhub-mu.vercel.app',
+        'Access-Control-Request-Method': 'POST',
+        'Access-Control-Request-Headers': 'content-type',
+      },
+    });
+    assert.equal(deployedResponse.status, 204);
+    assert.equal(deployedResponse.headers.get('access-control-allow-origin'), 'https://collabhub-mu.vercel.app');
   } finally {
     server.close();
   }

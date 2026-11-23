@@ -7,19 +7,19 @@ import { fileURLToPath } from 'node:url';
 dotenv.config({ path: fileURLToPath(new URL('../../.env', import.meta.url)) });
 
 function parseFrontendOrigins() {
-  // Keep the production fallback aligned with the deployed Vercel SPA. A
-  // comma-separated FRONTEND_ORIGIN still allows custom domains and local
-  // development without weakening CORS to '*'.
+  // Always include the deployed SPA origin. FRONTEND_ORIGIN may add custom
+  // domains or local origins, but CORS must never fall back to '*'.
   const configuredOrigins = process.env.FRONTEND_ORIGIN
-    ?? (process.env.NODE_ENV === 'production' ? 'https://joineazy.vercel.app' : 'http://localhost:5173');
+    ?? (process.env.NODE_ENV === 'production' ? 'https://collabhub-mu.vercel.app/' : 'http://localhost:5173');
 
   const origins = configuredOrigins
     .split(',')
     .map((origin) => origin.trim().replace(/\/$/, ''))
     .filter(Boolean);
 
-  if (process.env.NODE_ENV === 'production' && !origins.includes('https://joineazy.vercel.app')) {
-    origins.push('https://joineazy.vercel.app');
+  const deployedFrontendOrigin = 'https://collabhub-mu.vercel.app';
+  if (!origins.includes(deployedFrontendOrigin)) {
+    origins.push(deployedFrontendOrigin);
   }
 
   return origins;
